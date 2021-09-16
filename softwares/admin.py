@@ -1,8 +1,9 @@
 from django.contrib import admin
 from softwares.models import (
+    OperatingSystem,
     InstallationMethod,
     Software,
-    InstallationInfo
+    InstallationInfo,
 )
 # Register your models here.
 
@@ -17,6 +18,7 @@ class InstallationInfoAdmin(admin.ModelAdmin):
     list_display = ('id', 'software', 'method')
 
 
+admin.site.register(OperatingSystem)
 admin.site.register(Software, SoftwareAdmin)
 admin.site.register(InstallationMethod)
 admin.site.register(InstallationInfo, InstallationInfoAdmin)
