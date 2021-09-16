@@ -2,19 +2,21 @@ from django.db import models
 
 # Create your models here.
 
-OPERATING_SYSTEMS = (
-    ('Linux', 'Linux'),
-    ('MacOS', 'MacOS'),
-    ('Windows', 'Windows'),
-)
+
+class OperatingSystem(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+
+    def __str__(self):
+        return self.name
 
 
 class InstallationMethod(models.Model):
-    os = models.CharField(choices=OPERATING_SYSTEMS, max_length=50, default='Linux')
+    operating_system = models.ForeignKey(
+        OperatingSystem, on_delete=models.CASCADE)
     package_manager = models.CharField(max_length=50, blank=False, null=False)
 
     def __str__(self):
-        return self.package_manager
+        return "%s-%s" % (self.operating_system, self.package_manager)
 
 
 class Software(models.Model):
@@ -36,4 +38,4 @@ class InstallationInfo(models.Model):
     script = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return "%s-%s" % (self.software.name, self.method.os)
+        return "%s-%s" % (self.software.name, self.method.operating_system.name)
