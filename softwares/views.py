@@ -39,7 +39,7 @@ class InstallationMethodListView(ListAPIView):
 class SoftwareInstallationInfoView(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = InstallationInfoSerializer
-    
+
     def get_queryset(self):
         software_id = self.kwargs['id']
         queryset = InstallationInfo.objects.filter(software_id=software_id)
