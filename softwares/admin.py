@@ -1,24 +1,25 @@
 from django.contrib import admin
 from softwares.models import (
     OperatingSystem,
-    InstallationMethod,
+    PackageManager,
     Software,
     InstallationInfo,
 )
+
 # Register your models here.
 
 
 class SoftwareAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'linux', 'mac_OS', 'windows')
-    search_fields = ('name',)
-    list_filter = ('linux', 'mac_OS', 'windows')
+    list_display = ("id", "name")
+    search_fields = ("name",)
+    list_filter = ("os",)
 
 
 class InstallationInfoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'software', 'method')
+    list_display = ("id", "software", "method")
 
 
 admin.site.register(OperatingSystem)
 admin.site.register(Software, SoftwareAdmin)
-admin.site.register(InstallationMethod)
+admin.site.register(PackageManager)
 admin.site.register(InstallationInfo, InstallationInfoAdmin)

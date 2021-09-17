@@ -1,21 +1,16 @@
 from rest_framework import serializers
 
-from softwares.models import (
-    Software,
-    InstallationMethod,
-    InstallationInfo
-)
+from softwares.models import Software, PackageManager, InstallationInfo
 
 
-class InstallationMethodSerializer(serializers.ModelSerializer):
+class PackageManagerSerializer(serializers.ModelSerializer):
     os = serializers.SerializerMethodField()
 
     class Meta:
-        model = InstallationMethod
+        model = PackageManager
         fields = (
-            'id',
-            'os',
-            'package_manager',
+            "id",
+            "name",
         )
 
     def get_os(self, obj):
@@ -31,12 +26,12 @@ class InstallationInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstallationInfo
         fields = (
-            'software',
-            'package_name',
-            'download_url',
-            'platform',
-            'extension',
-            'script',
+            "software",
+            "package_name",
+            "download_url",
+            "platform",
+            "extension",
+            "script",
         )
 
     def get_software(self, obj):
@@ -53,29 +48,40 @@ class InstallationInfoSerializer(serializers.ModelSerializer):
 
 
 class SoftwareListSerializer(serializers.ModelSerializer):
+    os = serializers.SerializerMethodField()
+
     class Meta:
         model = Software
-        fields = '__all__'
+        fields = ("id", "name", "os")
+
+    def get_os(self, obj):
+        return [os.name for os in obj.os.all()]
 
 
 class SoftwareDetailSerializer(serializers.ModelSerializer):
     installation_methods = serializers.SerializerMethodField()
     install = serializers.SerializerMethodField()
+    os = serializers.SerializerMethodField()
 
     class Meta:
         model = Software
         fields = (
-            'id',
-            'name',
-            'installation_methods',
-            'linux',
-            'windows',
-            'mac_OS',
-            'install',
+            "id",
+            "name",
+            "os",
+            "installation_methods",
+            "install",
         )
 
+    def get_os(self, obj):
+        return [os.name for os in obj.os.all()]
+
     def get_installation_methods(self, obj):
-        return InstallationInfo.objects.filter(software=obj).values_list('method__package_manager', flat=True)
+        return InstallationInfo.objects.filter(software=obj).values_list(
+            "method__package_manager", flat=True
+        )
 
     def get_install(self, obj):
-        return InstallationInfoSerializer(InstallationInfo.objects.filter(software=obj), many=True).data
+        return InstallationInfoSerializer(
+            PackageManager.objects.filter(software=obj), many=True
+        ).data

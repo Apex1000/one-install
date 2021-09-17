@@ -1,39 +1,45 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny
 
-from softwares.models import (
-    Software,
-    InstallationMethod,
-    InstallationInfo
-)
+from softwares.models import Software, PackageManager, InstallationInfo
 
 from softwares.serializers import (
     SoftwareListSerializer,
     SoftwareDetailSerializer,
-    InstallationMethodSerializer,
+    PackageManagerSerializer,
     InstallationInfoSerializer,
 )
 
 
 # Views
 
+
 class SoftwareListView(ListAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SoftwareListSerializer
-    queryset = Software.objects.all()
+
+    def get_queryset(self):
+        queryset = Software.objects.all()
+
+        name = self.request.query_params.get("name")
+
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+
+        return queryset
 
 
 class SoftwareDetailView(RetrieveAPIView):
     permission_classes = (AllowAny,)
     serializer_class = SoftwareDetailSerializer
     queryset = Software.objects.all()
-    lookup_field = 'id'
+    lookup_field = "id"
 
 
-class InstallationMethodListView(ListAPIView):
+class PackageManagerListView(ListAPIView):
     permission_classes = (AllowAny,)
-    serializer_class = InstallationMethodSerializer
-    queryset = InstallationMethod.objects.all()
+    serializer_class = PackageManagerSerializer
+    queryset = PackageManager.objects.all()
 
 
 class SoftwareInstallationInfoView(ListAPIView):
@@ -41,7 +47,7 @@ class SoftwareInstallationInfoView(ListAPIView):
     serializer_class = InstallationInfoSerializer
 
     def get_queryset(self):
-        software_id = self.kwargs['id']
+        software_id = self.kwargs["id"]
         queryset = InstallationInfo.objects.filter(software_id=software_id)
 
         return queryset
